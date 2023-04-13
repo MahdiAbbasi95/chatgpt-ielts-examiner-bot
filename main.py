@@ -107,9 +107,7 @@ async def received_information(update: Update, context: ContextTypes.DEFAULT_TYP
     logger.info("Sending this text from user %s text: %s", user.first_name, update.message.text)
 
     await update.message.reply_text(
-        "This is what you already told me: \n"
-        f"{inputs_to_str(user_data)} \n"
-        "You can change it",
+        "Your response has been saved.",
         reply_markup=markup
     )
 
