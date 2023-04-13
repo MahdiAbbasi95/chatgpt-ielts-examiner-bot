@@ -148,10 +148,14 @@ async def assess(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
             logger.info("Assesment: %s", completion.choices[0].message.content)
 
-            await update.message.reply_text(
-                completion.choices[0].message.content,
-                reply_markup=ReplyKeyboardRemove()
-            )
+            message = completion.choices[0].message.content
+            message_chunks = [message[i:i+4000] for i in range(0, len(message), 4000)]
+
+            for message_chunk in message_chunks:
+                await update.message.reply_text(
+                    message_chunk,
+                    reply_markup=ReplyKeyboardRemove()
+                )
 
             redis_client = redis_connection(redis_host, redis_port, redis_db, redis_password)
             if redis_client is not None:
