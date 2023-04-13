@@ -40,7 +40,7 @@ logger = logging.getLogger(__name__)
 CHOOSING, TYPING_REPLY = range(2)
 
 reply_keyboard = [
-    ["Topic", "Answer"],
+    ["Writing-question", "Answer"],
     ["Assess"]
 ]
 markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
@@ -75,7 +75,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     logger.info("Sending /start from user %s", user.first_name)
 
     await update.message.reply_text(
-        "Hi! I'm an IELTS examiner and want to help you to assess your writing skills. Please give me your IELTS topic and writing answer. \n"
+        "Hi! I'm an IELTS examiner and want to help you to assess your writing skills. Please give me your IELTS Writing question and writing answer. \n"
         "Note that sometimes ChatGPT Servers have a high load, hence receiving your answer might take time, just wait for it.",
         reply_markup=markup
     )
@@ -125,7 +125,7 @@ async def assess(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     user_data = context.user_data
     user = update.message.from_user
 
-    if "Topic" in user_data and "Answer" in user_data:
+    if "Writing-question" in user_data and "Answer" in user_data:
         if check_denied_user(user.id):
             await update.message.reply_text(
                 "You can have only 1 assessment every 5 minute, try it after 5 minute again!",
@@ -143,7 +143,7 @@ async def assess(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
                 model=chatgpt_model,
                 messages=[
                     {"role": "system", "content": "I want you to act as an IELTS writing examiner. I will give you examination questions and their answers, I need you to use assessment criteria to award a band score for each of the four criteria: Task Achievement (for Task 1), Task Response (for Task 2); Coherence and Cohesion; Lexical Resource; Grammatical Range and Accuracy. The four criteria scored a minimum of 1 point and a maximum of 9 points, all of which are multiples of 0.5, usually they are not the same. In addition, give me your model answer to the examination question. In Addition give an Overal band score."},
-                    {"role": "user", "content": f'My writing topic is {user_data["Topic"]}'},
+                    {"role": "user", "content": f'My writing topic is {user_data["Writing-question"]}'},
                     {"role": "user", "content": f'My writing answer is {user_data["Answer"]}'},
                 ]
             )
@@ -165,7 +165,7 @@ async def assess(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
     else:
         await update.message.reply_text(
-            "You didn't enter one of Topic or Answer!"
+            "You didn't enter one of Writing-question or Answer!"
         )
 
 
@@ -180,7 +180,7 @@ def main() -> None:
         states={
             CHOOSING: [
                 MessageHandler(
-                    filters.Regex("^(Topic|Answer)$"), predefined_choice
+                    filters.Regex("^(Writing-question|Answer)$"), predefined_choice
                 )
             ],
             TYPING_REPLY: [
