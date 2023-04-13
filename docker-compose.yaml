@@ -1,0 +1,32 @@
+version: '3.8'
+
+volumes:
+  redis_data: {}
+
+networks:
+  ielts-bot:
+    driver: bridge
+
+services:
+  chatgpt-ielts-bot:
+    build:
+      context: .
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_DB=${REDIS_DB}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    networks:
+      - ielts-bot
+
+  redis:
+    image: redis:7.0-alpine
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    expose:
+      - 6379
+    volumes:
+      - redis_data:/data
+    networks:
+      - ielts-bot
