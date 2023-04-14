@@ -2,6 +2,7 @@ import logging
 import os
 import openai
 import redis
+import graypy
 from typing import Dict
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update
 from telegram.ext import (
@@ -21,6 +22,10 @@ from tenacity import (
 
 chatgpt_model = "gpt-3.5-turbo"
 
+# Graylog infromation
+graylog_host = os.getenv("GRAYLOG_HOST")
+graylog_port = os.getenv("GRAYLOG_PORT")
+
 # Redis information
 redis_host = os.getenv("REDIS_HOST")
 redis_port = os.getenv("REDIS_PORT")
@@ -36,6 +41,9 @@ logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s", level=logging.INFO
 )
 logger = logging.getLogger(__name__)
+
+handler = graypy.GELFTCPHandler(graylog_host, graylog_port)
+logger.addHandler(handler)
 
 CHOOSING, TYPING_REPLY = range(2)
 
