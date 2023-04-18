@@ -2,8 +2,10 @@ FROM python:3-alpine as production
 
 WORKDIR /app
 
-COPY . .
+COPY requirements.txt /tmp/
+RUN pip install --upgrade pip && \
+ pip install -r /tmp/requirements.txt
 
-RUN pip3 install -r requirements.txt
+COPY src/ /app
 
-CMD ["python3", "main.py"]
+CMD ["python", "main.py"]
